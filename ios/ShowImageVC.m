@@ -83,7 +83,7 @@
 
 -(void) makeSureImage {
     
-    NSDictionary * dic = [NSDictionary dictionaryWithObjectsAndKeys:self.dataImage,@"image", self.superVC, @"view", nil];
+    NSDictionary *dic = [NSDictionary dictionaryWithObjectsAndKeys:self.dataImage,@"image", nil];
     
     NSNotification *notification = [NSNotification notificationWithName:@"image" object:dic];
     

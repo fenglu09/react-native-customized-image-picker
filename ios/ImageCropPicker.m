@@ -129,6 +129,17 @@ RCT_EXPORT_MODULE();
     return root;
 }
 
+- (UIViewController *)getPresentedViewController
+{
+    UIViewController *appRootVC = [[[[UIApplication sharedApplication] delegate] window] rootViewController];
+    UIViewController *topVC = appRootVC;
+    if (topVC.presentedViewController) {
+        topVC = topVC.presentedViewController;
+    }
+    
+    return topVC;
+}
+
 RCT_EXPORT_METHOD(openCamera:(NSDictionary *)options
                   resolver:(RCTPromiseResolveBlock)resolve
                   rejecter:(RCTPromiseRejectBlock)reject) {
@@ -173,15 +184,18 @@ RCT_EXPORT_METHOD(openCamera:(NSDictionary *)options
 }
 
 - (void)InfoNotificationAction:(NSNotification *)notification{
+//    [[self getPresentedViewController] dismissViewControllerAnimated:NO completion:nil];
+//    [[notification.object objectForKey:@"view"] dismissViewControllerAnimated:NO completion:nil];
     
-    [[notification.object objectForKey:@"view"] dismissViewControllerAnimated:NO completion:nil];
+//    [NSTimer scheduledTimerWithTimeInterval:0.0 repeats:NO block:^(NSTimer * _Nonnull timer) {
+//
+//        UIImage *chosenImageT = [notification.object objectForKey:@"image"];
+//
+//        [self processSingleImagePick:chosenImageT withExif:nil withViewController:[self getPresentedViewController] withSourceURL:self.croppingFile[@"sourceURL"] withLocalIdentifier:self.croppingFile[@"localIdentifier"] withFilename:self.croppingFile[@"filename"]];
+//    }];
+    UIImage *chosenImageT = [notification.object objectForKey:@"image"];
     
-    [NSTimer scheduledTimerWithTimeInterval:0.0 repeats:NO block:^(NSTimer * _Nonnull timer) {
-        
-        UIImage *chosenImageT = [notification.object objectForKey:@"image"];
-        
-        [self processSingleImagePick:chosenImageT withExif:nil withViewController:[notification.object objectForKey:@"view"]  withSourceURL:self.croppingFile[@"sourceURL"] withLocalIdentifier:self.croppingFile[@"localIdentifier"] withFilename:self.croppingFile[@"filename"]];
-    }];
+    [self processSingleImagePick:chosenImageT withExif:nil withViewController:[self getPresentedViewController] withSourceURL:self.croppingFile[@"sourceURL"] withLocalIdentifier:self.croppingFile[@"localIdentifier"] withFilename:self.croppingFile[@"filename"]];
 }
 
 - (void)imagePickerController:(UIImagePickerController *)picker didFinishPickingMediaWithInfo:(NSDictionary *)info {
