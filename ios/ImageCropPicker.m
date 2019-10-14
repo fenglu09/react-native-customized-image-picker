@@ -157,9 +157,11 @@ RCT_EXPORT_METHOD(openCamera:(NSDictionary *)options
 
         dispatch_async(dispatch_get_main_queue(), ^{
             if ([[[self options] objectForKey:@"isWaterMark"] boolValue]) {
+                self.vc.modalPresentationStyle = UIModalPresentationFullScreen;
                 [[self getRootVC] presentViewController:self.vc animated:YES completion:nil];
             }
             else{
+                picker.modalPresentationStyle = UIModalPresentationFullScreen;
                 [[self getRootVC] presentViewController:picker animated:YES completion:nil];
             }
         });
@@ -309,7 +311,7 @@ RCT_EXPORT_METHOD(openPicker:(NSDictionary *)options
             }
             
             NSLog(@"%@", [self.options objectForKey:@"minCompressSize"]);
-            
+            imagePickerController.modalPresentationStyle = UIModalPresentationFullScreen;
             [[self getRootVC] presentViewController:imagePickerController animated:YES completion:nil];
             
             
@@ -349,6 +351,7 @@ RCT_EXPORT_METHOD(openCropper:(NSDictionary *)options
     [imageCropVC setModalTransitionStyle:UIModalTransitionStyleCrossDissolve];
     
     dispatch_async(dispatch_get_main_queue(), ^{
+        imageCropVC.modalPresentationStyle = UIModalPresentationFullScreen;
         [[self getRootVC] presentViewController:imageCropVC animated:YES completion:nil];
     });
 }

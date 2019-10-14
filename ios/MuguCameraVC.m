@@ -415,6 +415,7 @@
             showVC.superVC = self;
             showVC.isAcross = YES;
             [self.deviceMotion startMonitor];
+            showVC.modalPresentationStyle = UIModalPresentationFullScreen;
             [self presentViewController:showVC animated:YES completion:nil];
 
         }
@@ -439,6 +440,7 @@
             showVC.superVC = self;
             showVC.isAcross = NO;
             [self.deviceMotion startMonitor];
+            showVC.modalPresentationStyle = UIModalPresentationFullScreen;
             [self presentViewController:showVC animated:YES completion:nil];
         }
        
