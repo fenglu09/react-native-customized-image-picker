@@ -1167,6 +1167,42 @@ class PickerModule extends ReactContextBaseJavaModule implements ActivityEventLi
     }
 
 
+    /**
+     * 拍照后保存到图册
+     *
+     * @param path
+     */
+    @ReactMethod
+    public void saveCameraImage(final String path) {
+        if (!Environment.getExternalStorageState().equals(Environment.MEDIA_MOUNTED)) {
+            return;
+        }
+
+        try {
+
+            File appDir = new File(Environment.getExternalStorageDirectory(), "mogu");
+            if (!appDir.exists()) {
+                appDir.mkdir();
+            }
+
+            String fileName = System.currentTimeMillis() + ".jpg";
+            File file = new File(appDir, fileName);
+            FileOutputStream fos = new FileOutputStream(file);
+
+            String[] arr = path.split("file://");
+            Bitmap bmp = BitmapFactory.decodeFile(arr[1]);//filePath
+            if (bmp != null) {
+                bmp.compress(Bitmap.CompressFormat.JPEG, 100, fos);
+                fos.flush();
+                fos.close();
+                getCurrentActivity().sendBroadcast(new Intent(Intent.ACTION_MEDIA_SCANNER_SCAN_FILE, Uri.parse("file://" + file.getAbsolutePath())));
+            }
+        } catch (Exception e) {
+
+        }
+    }
+
+
     Uri OUTUri;
 
     public void crop2(String path) {
