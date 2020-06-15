@@ -72,6 +72,7 @@ class PickerModule extends ReactContextBaseJavaModule implements ActivityEventLi
 
     private Promise mPickerPromise;
     private boolean isWaterMark = false;
+    private boolean isSaveAlbum = true;
     private String address = "";
     private String name = "";
 
@@ -114,6 +115,9 @@ class PickerModule extends ReactContextBaseJavaModule implements ActivityEventLi
     }
 
     private void setConfiguration(final ReadableMap options) {
+        //add by david 手机拍照后自动保存照片到系统相册  start
+        isSaveAlbum = options.hasKey("isSaveAlbum") && options.getBoolean("isSaveAlbum");
+        //add by david 手机拍照后自动保存照片到系统相册 end
         maxImageSize = options.hasKey("maxImageSize") ? options.getInt("maxImageSize") : -1;
         isWaterMark = options.hasKey("isWaterMark") && options.getBoolean("isWaterMark");
         address = options.hasKey("address") ? options.getString("address") : "";
@@ -1139,6 +1143,11 @@ class PickerModule extends ReactContextBaseJavaModule implements ActivityEventLi
                     crop2(path);
                     return;
                 }
+                //add by david 手机拍照后自动保存照片到系统相册  start
+                if(isSaveAlbum){
+                    saveCameraImage(path);
+                }
+                //add by david 手机拍照后自动保存照片到系统相册  end
                 //压缩处理
                 setmaxImageSize(path);
                 return;
@@ -1172,7 +1181,7 @@ class PickerModule extends ReactContextBaseJavaModule implements ActivityEventLi
      *
      * @param path
      */
-    @ReactMethod
+
     public void saveCameraImage(final String path) {
         if (!Environment.getExternalStorageState().equals(Environment.MEDIA_MOUNTED)) {
             return;
@@ -1189,8 +1198,8 @@ class PickerModule extends ReactContextBaseJavaModule implements ActivityEventLi
             File file = new File(appDir, fileName);
             FileOutputStream fos = new FileOutputStream(file);
 
-            String[] arr = path.split("file://");
-            Bitmap bmp = BitmapFactory.decodeFile(arr[1]);//filePath
+//            String[] arr = path.split("file://");
+            Bitmap bmp = BitmapFactory.decodeFile(path);//filePath
             if (bmp != null) {
                 bmp.compress(Bitmap.CompressFormat.JPEG, 100, fos);
                 fos.flush();
