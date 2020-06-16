@@ -72,6 +72,7 @@ class PickerModule extends ReactContextBaseJavaModule implements ActivityEventLi
 
     private Promise mPickerPromise;
     private boolean isWaterMark = false;
+    private boolean isSaveAlbum = true;
     private String address = "";
     private String name = "";
 
@@ -114,6 +115,9 @@ class PickerModule extends ReactContextBaseJavaModule implements ActivityEventLi
     }
 
     private void setConfiguration(final ReadableMap options) {
+        //add by david 手机拍照后自动保存照片到系统相册  start
+        isSaveAlbum = options.hasKey("isSaveAlbum") && options.getBoolean("isSaveAlbum");
+        //add by david 手机拍照后自动保存照片到系统相册 end
         maxImageSize = options.hasKey("maxImageSize") ? options.getInt("maxImageSize") : -1;
         isWaterMark = options.hasKey("isWaterMark") && options.getBoolean("isWaterMark");
         address = options.hasKey("address") ? options.getString("address") : "";
@@ -1139,6 +1143,11 @@ class PickerModule extends ReactContextBaseJavaModule implements ActivityEventLi
                     crop2(path);
                     return;
                 }
+                //add by david 手机拍照后自动保存照片到系统相册  start
+                if(isSaveAlbum){
+                    saveCameraImage(path);
+                }
+                //add by david 手机拍照后自动保存照片到系统相册  end
                 //压缩处理
                 setmaxImageSize(path);
                 return;
@@ -1160,6 +1169,42 @@ class PickerModule extends ReactContextBaseJavaModule implements ActivityEventLi
                 //压缩处理
                 setmaxImageSize(OUTUri.toString());
                 return;
+            }
+        } catch (Exception e) {
+
+        }
+    }
+
+
+    /**
+     * 拍照后保存到图册
+     *
+     * @param path
+     */
+
+    public void saveCameraImage(final String path) {
+        if (!Environment.getExternalStorageState().equals(Environment.MEDIA_MOUNTED)) {
+            return;
+        }
+
+        try {
+
+            File appDir = new File(Environment.getExternalStorageDirectory(), "mogu");
+            if (!appDir.exists()) {
+                appDir.mkdir();
+            }
+
+            String fileName = System.currentTimeMillis() + ".jpg";
+            File file = new File(appDir, fileName);
+            FileOutputStream fos = new FileOutputStream(file);
+
+//            String[] arr = path.split("file://");
+            Bitmap bmp = BitmapFactory.decodeFile(path);//filePath
+            if (bmp != null) {
+                bmp.compress(Bitmap.CompressFormat.JPEG, 100, fos);
+                fos.flush();
+                fos.close();
+                getCurrentActivity().sendBroadcast(new Intent(Intent.ACTION_MEDIA_SCANNER_SCAN_FILE, Uri.parse("file://" + file.getAbsolutePath())));
             }
         } catch (Exception e) {
 
